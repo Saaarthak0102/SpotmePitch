@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1a1a;
+      color: #F8F4F1;
+    }
+
+    .deck-container {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #333;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-title {
+      font-size: 13px;
+      color: #A85A36;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-right: 8px;
+      font-family: sans-serif;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 1px solid #444;
+      color: #aaa;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: sans-serif;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      border-color: #A85A36;
+      color: #D97C53;
+    }
+
+    .nav-btn.active {
+      background: #A85A36;
+      border-color: #A85A36;
+      color: #FFFDFB;
+    }
+
+    .slide {
+      width: 100%;
+      aspect-ratio: 16/9;
+      position: relative;
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    /* SLIDE BACKGROUNDS */
+    .bg-cream {
+      background: linear-gradient(135deg, #FFFDFB 0%, #F8F4F1 50%, #f0e8e0 100%);
+    }
+
+    .bg-dark {
+      background: linear-gradient(135deg, #1a0f0a 0%, #2d1810 100%);
+    }
+
+    .bg-warm {
+      background: linear-gradient(135deg, #F8F4F1 0%, #ede3d8 100%);
+    }
+
+    /* TYPOGRAPHY */
+    .eyebrow {
+      font-family: sans-serif;
+      font-size: clamp(9px, 1.2vw, 13px);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #A85A36;
+      margin-bottom: 0.4em;
+    }
+
+    .h1 {
+      font-size: clamp(28px, 5.5vw, 72px);
+      font-weight: 700;
+      line-height: 1.05;
+    }
+
+    .h2 {
+      font-size: clamp(18px, 3.5vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .h3 {
+      font-size: clamp(14px, 2.2vw, 28px);
+      font-weight: 600;
+    }
+
+    .body {
+      font-family: sans-serif;
+      font-size: clamp(10px, 1.5vw, 16px);
+      line-height: 1.6;
+    }
+
+    .small {
+      font-family: sans-serif;
+      font-size: clamp(8px, 1.1vw, 12px);
+    }
+
+    .text-cream {
+      color: #FFFDFB;
+    }
+
+    .text-brown {
+      color: #A85A36;
+    }
+
+    .text-dark {
+      color: #2d1810;
+    }
+
+    .text-mid {
+      color: #5a3728;
+    }
+
+    .accent {
+      color: #D97C53;
+    }
+
+    /* SLIDE LAYOUT */
+    .slide-inner {
+      width: 90%;
+      max-width: 1200px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .col-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4%;
+      align-items: center;
+    }
+
+    .col-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3%;
+    }
+
+    .col-4 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 2%;
+    }
+
+    /* CARDS */
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(168, 90, 54, 0.2);
+      border-radius: 12px;
+      padding: clamp(12px, 2vw, 24px);
+      backdrop-filter: blur(4px);
+    }
+
+    .card-dark {
+      background: rgba(45, 24, 16, 0.6);
+      border: 1px solid rgba(217, 124, 83, 0.3);
+      border-radius: 12px;
+      padding: clamp(12px, 2vw, 24px);
+    }
+
+    .card-accent {
+      background: rgba(168, 90, 54, 0.1);
+      border: 1.5px solid #A85A36;
+      border-radius: 12px;
+      padding: clamp(12px, 2vw, 24px);
+    }
+
+    /* FLOW STEPS */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 1%;
+      flex-wrap: nowrap;
+    }
+
+    .flow-step {
+      text-align: center;
+      flex: 1;
+    }
+
+    .flow-icon {
+      width: clamp(32px, 5vw, 56px);
+      height: clamp(32px, 5vw, 56px);
+      border-radius: 50%;
+      background: #A85A36;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 2.2vw, 24px);
+      margin: 0 auto 6px;
+    }
+
+    .flow-arrow {
+      font-size: clamp(14px, 2vw, 24px);
+      color: #A85A36;
+      flex: 0 0 auto;
+    }
+
+    /* LOGO/MASCOT placeholders */
+    .spotme-wordmark {
+      font-size: clamp(32px, 6vw, 80px);
+      font-weight: 900;
+      color: #2d1810;
+      letter-spacing: -0.02em;
+    }
+
+    .spotme-s {
+      color: #A85A36;
+    }
+
+    /* KPI CARD */
+    .kpi {
+      text-align: center;
+    }
+
+    .kpi-num {
+      font-size: clamp(24px, 4.5vw, 58px);
+      font-weight: 800;
+      color: #A85A36;
+      line-height: 1;
+    }
+
+    .kpi-label {
+      font-family: sans-serif;
+      font-size: clamp(9px, 1.2vw, 14px);
+      color: #5a3728;
+      margin-top: 4px;
+    }
+
+    /* PRICING */
+    .price-card {
+      text-align: center;
+    }
+
+    .price-amount {
+      font-size: clamp(18px, 3vw, 40px);
+      font-weight: 800;
+      color: #A85A36;
+    }
+
+    .price-plan {
+      font-family: sans-serif;
+      font-size: clamp(9px, 1.1vw, 13px);
+      color: #5a3728;
+      margin-bottom: 4px;
+    }
+
+    .price-highlight {
+      background: #A85A36;
+      color: #FFFDFB;
+      border-radius: 8px;
+    }
+
+    /* CHECK TABLE */
+    .check-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .check-table th {
+      font-family: sans-serif;
+      font-size: clamp(9px, 1.2vw, 13px);
+      padding: 6px 4px;
+      text-align: center;
+      border-bottom: 1px solid rgba(168, 90, 54, 0.3);
+    }
+
+    .check-table td {
+      font-family: sans-serif;
+      font-size: clamp(9px, 1.1vw, 12px);
+      padding: 5px 4px;
+      text-align: center;
+      border-bottom: 1px solid rgba(168, 90, 54, 0.1);
+    }
+
+    .check-table .feature-col {
+      text-align: left;
+      color: #5a3728;
+    }
+
+    .check-table .spotme-col {
+      background: rgba(168, 90, 54, 0.08);
+      font-weight: 600;
+      color: #A85A36;
+    }
+
+    .check {
+      color: #2d8a4a;
+      font-size: clamp(10px, 1.5vw, 18px);
+    }
+
+    .cross {
+      color: #c0392b;
+      font-size: clamp(10px, 1.5vw, 18px);
+    }
+
+    /* MASCOT SVG */
+    .mascot-area {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .mascot-svg {
+      width: clamp(60px, 12vw, 180px);
+      height: auto;
+    }
+
+    /* SLIDE NUMBER */
+    .slide-num {
+      position: absolute;
+      bottom: clamp(8px, 1.5vw, 18px);
+      right: clamp(12px, 2vw, 28px);
+      font-family: sans-serif;
+      font-size: clamp(8px, 1vw, 12px);
+      color: rgba(168, 90, 54, 0.5);
+      z-index: 10;
+    }
+
+    /* DECORATIVE SHAPES */
+    .deco-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(168, 90, 54, 0.06);
+      pointer-events: none;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      display: flex;
+      gap: 3%;
+    }
+
+    .timeline-item {
+      flex: 1;
+      position: relative;
+      padding-left: 0;
+    }
+
+    .timeline-dot {
+      width: clamp(10px, 1.8vw, 20px);
+      height: clamp(10px, 1.8vw, 20px);
+      border-radius: 50%;
+      background: #A85A36;
+      margin-bottom: 8px;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: clamp(5px, 0.9vw, 10px);
+      top: clamp(5px, 0.9vw, 10px);
+      height: 2px;
+      right: -3%;
+      background: rgba(168, 90, 54, 0.3);
+    }
+
+    /* GRID DOTS BG */
+    .grid-dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(168, 90, 54, 0.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+
+    /* SPONSOR FLOW */
+    .sponsor-box {
+      background: rgba(168, 90, 54, 0.1);
+      border: 1px solid rgba(168, 90, 54, 0.3);
+      border-radius: 8px;
+      padding: clamp(8px, 1.5vw, 16px);
+      text-align: center;
+      font-family: sans-serif;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: #A85A36;
+      color: #FFFDFB;
+      padding: clamp(8px, 1.2vw, 14px) clamp(16px, 2.5vw, 32px);
+      border-radius: 6px;
+      font-family: sans-serif;
+      font-size: clamp(10px, 1.3vw, 16px);
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 12px;
+    }
+
+    /* FEATURE SECTION */
+    .feature-icon {
+      font-size: clamp(18px, 3vw, 36px);
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="deck-container">
+
+    <div class="nav-bar">
+      <span class="nav-title">SPOTME DECK</span>
+      <button class="nav-btn active" onclick="showSlide(0)">1</button>
+      <button class="nav-btn" onclick="showSlide(1)">2</button>
+      <button class="nav-btn" onclick="showSlide(2)">3</button>
+      <button class="nav-btn" onclick="showSlide(3)">4</button>
+      <button class="nav-btn" onclick="showSlide(4)">5</button>
+      <button class="nav-btn" onclick="showSlide(5)">6</button>
+      <button class="nav-btn" onclick="showSlide(6)">7</button>
+      <button class="nav-btn" onclick="showSlide(7)">8</button>
+      <button class="nav-btn" onclick="showSlide(8)">9</button>
+      <button class="nav-btn" onclick="showSlide(9)">10</button>
+      <button class="nav-btn" onclick="showSlide(10)">11</button>
+      <button class="nav-btn" onclick="showSlide(11)">12</button>
+      <button class="nav-btn" onclick="prevSlide()" style="margin-left:auto">← Prev</button>
+      <button class="nav-btn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <!-- SLIDE 1: COVER -->
+    <div class="slide bg-cream active" id="slide-0">
+      <div class="deco-circle" style="width:55vw;height:55vw;right:-15vw;top:-15vw;"></div>
+      <div class="deco-circle" style="width:30vw;height:30vw;left:-8vw;bottom:-8vw;"></div>
+      <div class="slide-inner" style="text-align:center;">
+        <div class="eyebrow" style="font-size:clamp(9px,1.4vw,15px);letter-spacing:0.3em;">AI-POWERED EVENT PHOTO
+          DISCOVERY</div>
+        <div style="margin:1% 0;">
+          <span class="spotme-wordmark"><span class="spotme-s" style="font-style:italic">S</span><span
+              style="font-style:italic">potme</span>
+        </div>
+        <div class="h3 text-mid" style="margin-bottom:2%;">Your Event Photos, Delivered Instantly</div>
+
+
+        <div class="small" style="color:#999; margin-top:1.5%; font-family:sans-serif;">stopme.in</div>
+      </div>
+      <div class="slide-num">01 / 12</div>
+    </div>
+    <!-- SLIDE 2: MARKET -->
+    <div class="slide bg-cream" id="slide-1">
+      <div class="slide-inner" style="text-align:center;">
+        <div class="eyebrow">The Opportunity</div>
+        <div class="h2 text-dark" style="margin-bottom:1%;">Every Event Creates Content</div>
+        <div class="body text-mid" style="margin-bottom:3%;">A massive, underserved market with no dedicated
+          photo-discovery solution.</div>
+        <div class="col-4" style="margin-bottom:3%;">
+          <div class="card" style="text-align:center;">
+            <div style="font-size:clamp(20px,3vw,36px);">💍</div>
+            <div class="small text-dark" style="margin-top:6px;font-weight:600;">Weddings</div>
+            <div class="small" style="color:#888;">~10M/yr in India</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:clamp(20px,3vw,36px);">🎵</div>
+            <div class="small text-dark" style="margin-top:6px;font-weight:600;">Concerts</div>
+            <div class="small" style="color:#888;">Growing fast</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:clamp(20px,3vw,36px);">🏆</div>
+            <div class="small text-dark" style="margin-top:6px;font-weight:600;">Sports Events</div>
+            <div class="small" style="color:#888;">Marathons, leagues</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:clamp(20px,3vw,36px);">🎓</div>
+            <div class="small text-dark" style="margin-top:6px;font-weight:600;">College Fests</div>
+            <div class="small" style="color:#888;">500K+ events/yr</div>
+          </div>
+        </div>
+        <div class="col-2" style="max-width: 800px; margin: 0 auto;">
+          <div class="card-accent" style="text-align:center;">
+            <div class="kpi-num">$2.3B</div>
+            <div class="kpi-label">Event photo services market</div>
+          </div>
+          <div class="card-accent" style="text-align:center;">
+            <div class="kpi-num">1.4B</div>
+            <div class="kpi-label">Event attendees globally / year</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">02 / 12</div>
+    </div>
+
+    <!-- SLIDE 3: PROBLEM -->
+    <div class="slide bg-warm" id="slide-2">
+      <div class="slide-inner col-2">
+        <div>
+          <div class="eyebrow">The Problem</div>
+          <div class="h2 text-dark" style="margin-bottom:3%;">Thousands of Photos.<br><span class="text-brown">Zero
+              Discovery.</span></div>
+          <div class="body text-mid" style="margin-bottom:4%;">Every event generates thousands of photos. But attendees
+            can't find themselves — buried in shared drives, WhatsApp floods, and chaotic Google Photos folders.</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="card" style="display:flex;align-items:center;gap:10px;padding:10px 16px;">
+              <span style="font-size:clamp(16px,2.5vw,28px);">😤</span>
+              <span class="body text-dark">Guests scroll 10,000+ photos manually</span>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:10px;padding:10px 16px;">
+              <span style="font-size:clamp(16px,2.5vw,28px);">📁</span>
+              <span class="body text-dark">Organizers dump links in group chats</span>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:10px;padding:10px 16px;">
+              <span style="font-size:clamp(16px,2.5vw,28px);">❌</span>
+              <span class="body text-dark">Most people never find their own photos</span>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;">
+          <svg viewBox="0 0 300 320" width="100%" style="max-width:320px;">
+            <rect x="20" y="20" width="260" height="40" rx="6" fill="#e8e0d8" stroke="#c0a898" stroke-width="1" />
+            <text x="150" y="45" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#5a3728">📁 Google
+              Drive Folder</text>
+            <text x="150" y="90" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="800"
+              fill="#A85A36">10,000+</text>
+            <text x="150" y="108" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5a3728">photos
+              from the event</text>
+            <!-- Grid of tiny photo boxes -->
+            <g opacity="0.5">
+              <rect x="20" y="120" width="36" height="28" rx="3" fill="#d0b8a8" />
+              <rect x="62" y="120" width="36" height="28" rx="3" fill="#c8a898" />
+              <rect x="104" y="120" width="36" height="28" rx="3" fill="#d8c0b0" />
+              <rect x="146" y="120" width="36" height="28" rx="3" fill="#c0a890" />
+              <rect x="188" y="120" width="36" height="28" rx="3" fill="#d0b8a0" />
+              <rect x="230" y="120" width="36" height="28" rx="3" fill="#c8b8a8" />
+              <rect x="20" y="154" width="36" height="28" rx="3" fill="#c8b0a0" />
+              <rect x="62" y="154" width="36" height="28" rx="3" fill="#d0c0b0" />
+              <rect x="104" y="154" width="36" height="28" rx="3" fill="#c8a890" />
+              <rect x="146" y="154" width="36" height="28" rx="3" fill="#d8b8a8" />
+              <rect x="188" y="154" width="36" height="28" rx="3" fill="#c0b0a0" />
+              <rect x="230" y="154" width="36" height="28" rx="3" fill="#d0b8a8" />
+              <rect x="20" y="188" width="36" height="28" rx="3" fill="#d8c0a8" />
+              <rect x="62" y="188" width="36" height="28" rx="3" fill="#c8b0a0" />
+              <rect x="104" y="188" width="36" height="28" rx="3" fill="#d0b8a8" />
+              <rect x="146" y="188" width="36" height="28" rx="3" fill="#c0a898" />
+              <rect x="188" y="188" width="36" height="28" rx="3" fill="#d8b8a0" />
+              <rect x="230" y="188" width="36" height="28" rx="3" fill="#c8a898" />
+            </g>
+            <!-- Highlight one -->
+            <rect x="104" y="154" width="36" height="28" rx="3" fill="none" stroke="#A85A36" stroke-width="2.5" />
+            <text x="122" y="173" text-anchor="middle" font-family="sans-serif" font-size="10"
+              fill="#A85A36">you?</text>
+            <text x="150" y="240" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#c0392b">😩 Where
+              am I in all of this?</text>
+            <line x1="122" y1="182" x2="122" y2="228" stroke="#A85A36" stroke-width="1.5" stroke-dasharray="4,3" />
+            <text x="150" y="270" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#888">Most guests
+              give up searching.</text>
+            <text x="150" y="286" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#888">Memories stay
+              lost.</text>
+          </svg>
+        </div>
+      </div>
+      <div class="slide-num">03 / 12</div>
+    </div>
+
+
+
+    <!-- SLIDE 4: SOLUTION -->
+    <div class="slide bg-warm" id="slide-3">
+      <div class="slide-inner col-2">
+        <div>
+          <div class="eyebrow">Introducing SpotMe</div>
+          <div class="h2 text-dark" style="margin-bottom:2%;">One Selfie.<br><span class="text-brown">Every
+              Memory.</span></div>
+          <div class="body text-mid" style="margin-bottom:3%;">SpotMe uses AI face recognition to instantly deliver
+            every photo of a guest from a massive event gallery — in seconds, not hours.</div>
+          <div class="btn-primary" style="cursor:default;">Try at stopme.in</div>
+        </div>
+        <div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div class="card" style="display:flex;align-items:center;gap:12px;">
+              <div
+                style="width:clamp(28px,3.5vw,44px);height:clamp(28px,3.5vw,44px);border-radius:50%;background:#A85A36;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(12px,1.8vw,20px);flex-shrink:0;">
+                1</div>
+              <div>
+                <div class="body" style="font-weight:600;color:#2d1810;">Photographer uploads photos</div>
+                <div class="small" style="color:#888;">Drag-drop bulk upload, auto-organized</div>
+              </div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:12px;">
+              <div
+                style="width:clamp(28px,3.5vw,44px);height:clamp(28px,3.5vw,44px);border-radius:50%;background:#A85A36;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(12px,1.8vw,20px);flex-shrink:0;">
+                2</div>
+              <div>
+                <div class="body" style="font-weight:600;color:#2d1810;">Guest scans QR code</div>
+                <div class="small" style="color:#888;">Posted at venue or shared on WhatsApp</div>
+              </div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:12px;">
+              <div
+                style="width:clamp(28px,3.5vw,44px);height:clamp(28px,3.5vw,44px);border-radius:50%;background:#A85A36;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(12px,1.8vw,20px);flex-shrink:0;">
+                3</div>
+              <div>
+                <div class="body" style="font-weight:600;color:#2d1810;">Uploads a selfie</div>
+                <div class="small" style="color:#888;">One photo is all it takes</div>
+              </div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:12px;">
+              <div
+                style="width:clamp(28px,3.5vw,44px);height:clamp(28px,3.5vw,44px);border-radius:50%;background:#D97C53;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(12px,1.8vw,20px);flex-shrink:0;">
+                4</div>
+              <div>
+                <div class="body" style="font-weight:600;color:#2d1810;">AI matches faces instantly</div>
+                <div class="small" style="color:#888;">Computer vision scans entire gallery</div>
+              </div>
+            </div>
+            <div class="card-accent" style="display:flex;align-items:center;gap:12px;">
+              <div
+                style="width:clamp(28px,3.5vw,44px);height:clamp(28px,3.5vw,44px);border-radius:50%;background:#2d8a4a;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(12px,1.8vw,20px);flex-shrink:0;">
+                ✓</div>
+              <div>
+                <div class="body" style="font-weight:600;color:#2d1810;">Personal gallery delivered</div>
+                <div class="small" style="color:#A85A36;">Every photo of you, instantly</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">04 / 12</div>
+    </div>
+
+
+
+    <!-- SLIDE 8: FEATURES -->
+    <div class="slide bg-cream" id="slide-4">
+      <div class="slide-inner">
+        <div class="eyebrow" style="text-align:center;">Platform Features</div>
+        <div class="h3 text-dark" style="text-align:center;margin-bottom:2%;">Designed for Every Stakeholder</div>
+        <div class="col-3">
+          <div class="card">
+            <div class="feature-icon">👥</div>
+            <div class="body" style="font-weight:700;color:#A85A36;margin-bottom:8px;">Guests</div>
+            <div class="small text-dark" style="line-height:1.6;">✓ Selfie-based search<br>✓ Instant gallery<br>✓
+              Download all photos<br>✓ No app install needed</div>
+          </div>
+          <div class="card">
+            <div class="feature-icon">📸</div>
+            <div class="body" style="font-weight:700;color:#A85A36;margin-bottom:8px;">Photographers</div>
+            <div class="small text-dark" style="line-height:1.6;">✓ Bulk photo upload<br>✓ Auto AI processing<br>✓
+              Client dashboard<br>✓ Watermark control</div>
+          </div>
+          <div class="card">
+            <div class="feature-icon">🏛️</div>
+            <div class="body" style="font-weight:700;color:#A85A36;margin-bottom:8px;">Organizers</div>
+            <div class="small text-dark" style="line-height:1.6;">✓ QR code generation<br>✓ Photo engagement stats<br>✓
+              Custom Branding</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">05 / 12</div>
+    </div>
+
+    <!-- SLIDE 9: COMPETITION -->
+    <div class="slide bg-warm" id="slide-5">
+      <div class="slide-inner">
+        <div class="eyebrow" style="text-align:center;">Why SpotMe Wins</div>
+        <div class="h3 text-dark" style="text-align:center;margin-bottom:2%;">Focused. Faster. Simpler.</div>
+        <div style="overflow-x:auto;">
+          <table class="check-table" style="min-width:400px;">
+            <thead>
+              <tr>
+                <th class="feature-col" style="text-align:left;">Feature</th>
+                <th style="color:#A85A36;">Google Drive</th>
+                <th style="color:#A85A36;">Dropbox</th>
+                <th style="color:#A85A36;">SpotMe ✦</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="feature-col">AI Face Matching</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="cross">✗</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="feature-col">QR Code Access</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="cross">✗</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="feature-col">Verification</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="cross">✗</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="feature-col">Personal Gallery</td>
+                <td><span class="check">✓</span></td>
+                <td><span class="check">✓</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="feature-col">Built for Photographers</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="cross">✗</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="feature-col">Affordable Pricing</td>
+                <td><span class="check">✓</span></td>
+                <td><span class="cross">✗</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td class="feature-col">Custom Branding</td>
+                <td><span class="cross">✗</span></td>
+                <td><span class="cross">✗</span></td>
+                <td class="spotme-col"><span class="check">✓</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="text-align:center;margin-top:3%;font-style:italic;color:#A85A36;font-size:clamp(12px,1.8vw,22px);">
+          "Others manage events. SpotMe delivers memories."
+        </div>
+      </div>
+      <div class="slide-num">06 / 12</div>
+    </div>
+
+    <!-- SLIDE 10: BUSINESS MODEL -->
+    <div class="slide bg-cream" id="slide-6">
+      <div class="slide-inner">
+        <div class="eyebrow" style="text-align:center;">Business Model</div>
+        <div class="h3 text-dark" style="text-align:center;margin-bottom:2%;">Recurring Revenue Engine</div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1.5%;margin-bottom:3%;">
+          <div class="card price-card">
+            <div class="price-plan">Starter</div>
+            <div class="price-amount">₹249</div>
+            <div class="small" style="color:#888;margin-top:4px;">1 event<br>up to 500 photos</div>
+          </div>
+          <div class="card price-card">
+            <div class="price-plan">Personal Pro</div>
+            <div class="price-amount">₹999</div>
+            <div class="small" style="color:#888;margin-top:4px;">5 events<br>unlimited photos</div>
+          </div>
+          <div class="card price-card">
+            <div class="price-plan">Studio Basic</div>
+            <div class="price-amount">₹699</div>
+            <div class="small" style="color:#888;margin-top:4px;">Monthly<br>10 events</div>
+          </div>
+          <div class="card price-card price-highlight">
+            <div class="price-plan" style="color:rgba(255,255,255,0.7);">Studio Pro ⭐</div>
+            <div class="price-amount" style="color:#FFFDFB;">₹1,599</div>
+            <div class="small" style="color:rgba(255,255,255,0.7);margin-top:4px;">Monthly<br>Unlimited + API</div>
+          </div>
+          <div class="card price-card">
+            <div class="price-plan">Enterprise</div>
+            <div class="price-amount" style="font-size:clamp(14px,2.2vw,28px);">Custom</div>
+            <div class="small" style="color:#888;margin-top:4px;">White label<br>SLA + support</div>
+          </div>
+        </div>
+        <div class="h3 text-dark" style="text-align:center;margin-bottom:1.5%;font-size:clamp(11px,1.5vw,18px);">
+          Additional Revenue Streams</div>
+        <div class="col-4">
+          <div class="sponsor-box">
+            <div style="font-size:clamp(14px,2vw,24px);">🤝</div>
+            <div class="small text-dark" style="margin-top:4px;font-weight:600;">Sponsor Banners</div>
+          </div>
+          <div class="sponsor-box">
+            <div style="font-size:clamp(14px,2vw,24px);">🏷️</div>
+            <div class="small text-dark" style="margin-top:4px;font-weight:600;">Custom Branding</div>
+          </div>
+          <div class="sponsor-box">
+            <div style="font-size:clamp(14px,2vw,24px);">🔌</div>
+            <div class="small text-dark" style="margin-top:4px;font-weight:600;">Personalized Goodies</div>
+          </div>
+          <div class="sponsor-box">
+            <div style="font-size:clamp(14px,2vw,24px);">📊</div>
+            <div class="small text-dark" style="margin-top:4px;font-weight:600;">Analytics Suite</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">07 / 12</div>
+    </div>
+
+    <!-- SLIDE 11: SPONSORSHIP -->
+    <div class="slide bg-warm" id="slide-7">
+      <div class="slide-inner col-2">
+        <div>
+          <div class="eyebrow">Sponsor Ecosystem</div>
+          <div class="h2 text-dark" style="margin-bottom:2%;">Turn Memories Into<br><span
+              class="text-brown">Engagement</span></div>
+          <div class="body text-mid" style="margin-bottom:3%;">Sponsors get branded photo delivery experiences —
+            measurable impressions tied to emotional moments.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="card" style="padding:8px 12px;">
+              <div class="small text-dark"><strong>📊 Measurable:</strong> Track opens, downloads, offers redeemed</div>
+            </div>
+            <div class="card" style="padding:8px 12px;">
+              <div class="small text-dark"><strong>🎯 Contextual:</strong> Ads shown inside a personal memory moment
+              </div>
+            </div>
+            <div class="card" style="padding:8px 12px;">
+              <div class="small text-dark"><strong>💰 Performance:</strong> Cost-per-engagement model</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">08 / 12</div>
+    </div>
+
+    <!-- SLIDE 12: TRACTION -->
+    <div class="slide bg-cream" id="slide-8">
+      <div class="slide-inner">
+        <div class="eyebrow" style="text-align:center;">Early Validation</div>
+        <div class="h2 text-dark" style="text-align:center;margin-bottom:3%;">Growing Event by Event</div>
+
+        <div class="col-2">
+          <!-- Left Column: Latest Event details -->
+          <div class="card-accent"
+            style="padding: 24px; display: flex; flex-direction: column; gap: 12px; min-height: 280px; justify-content: center;">
+            <div class="eyebrow">Our Latest Event</div>
+            <div class="h3 text-dark">MLH Hack Days 2026</div>
+            <div class="body text-mid" style="margin-bottom: 8px;">
+              Held at Atria Institute of Technology, Bengaluru, in collaboration with Atria Summer of Code —
+              high-density developer hackathon.
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div
+                style="background: rgba(255,255,255,0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(168,90,54,0.1);">
+                <div class="kpi-num" style="font-size: clamp(20px, 3vw, 36px);">800+</div>
+                <div class="small text-mid" style="font-weight: 600;">Photos Processed</div>
+              </div>
+              <div
+                style="background: rgba(255,255,255,0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(168,90,54,0.1);">
+                <div class="kpi-num" style="font-size: clamp(20px, 3vw, 36px);">2100+</div>
+                <div class="small text-mid" style="font-weight: 600;">Faces Detected</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Feedbacks -->
+          <div class="card"
+            style="padding: 24px; display: flex; flex-direction: column; gap: 12px; min-height: 280px; justify-content: center;">
+            <div class="eyebrow">Attendee & Organizer Feedback</div>
+
+            <div style="border-left: 3px solid #A85A36; padding-left: 12px; margin-bottom: 8px;">
+              <div class="body text-dark" style="font-style: italic; font-size: clamp(10px, 1.3vw, 14px);">
+                "Scanned the QR, uploaded a selfie, and instantly got my coding shots from the main stage. Absolutely
+                flawless!"
+              </div>
+              <div class="small text-mid" style="margin-top: 4px; font-weight: 600;">— Hacker at MLH Hack Days '26</div>
+            </div>
+
+            <div style="border-left: 3px solid #D97C53; padding-left: 12px;">
+              <div class="body text-dark" style="font-style: italic; font-size: clamp(10px, 1.3vw, 14px);">
+                "With 800+ high-quality event photos, manually sharing them would be impossible. SpotMe did it
+                automatically."
+              </div>
+              <div class="small text-mid" style="margin-top: 4px; font-weight: 600;">— Organizer, Atria Summer of Code
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">09 / 12</div>
+    </div>
+
+    <!-- SLIDE 14: TRACTION & ROADMAP -->
+    <div class="slide bg-warm" id="slide-9">
+      <div class="slide-inner">
+        <div class="eyebrow" style="text-align:center;">Milestones & Growth</div>
+        <div class="h2 text-dark" style="text-align:center;margin-bottom:3%;">Traction & Roadmap</div>
+
+        <div class="col-3">
+          <!-- Card 1: Current -->
+          <div class="card-accent"
+            style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; padding: clamp(16px, 2.5vw, 32px);">
+            <div class="h3 text-brown"
+              style="margin-bottom: 12px; font-weight: 700; border-bottom: 2px solid #A85A36; padding-bottom: 6px;">
+              Current</div>
+            <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 10px;">
+              <li class="body text-dark" style="font-weight: 600;">✓ MLH Hack Days</li>
+              <li class="body text-dark" style="font-weight: 600;">✓ 800+ photos processed</li>
+              <li class="body text-dark" style="font-weight: 600;">✓ 2100+ faces detected</li>
+            </ul>
+          </div>
+
+          <!-- Card 2: Next 3 Months -->
+          <div class="card"
+            style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; padding: clamp(16px, 2.5vw, 32px);">
+            <div class="h3 text-dark"
+              style="margin-bottom: 12px; font-weight: 700; border-bottom: 2px solid rgba(168,90,54,0.2); padding-bottom: 6px;">
+              Next 3 Months</div>
+            <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 10px;">
+              <li class="body text-mid">• 25 events</li>
+              <li class="body text-mid">• 10 photographers onboarded</li>
+              <li class="body text-mid">• 5,000 users</li>
+            </ul>
+          </div>
+
+          <!-- Card 3: Next 12 Months -->
+          <div class="card"
+            style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; padding: clamp(16px, 2.5vw, 32px);">
+            <div class="h3 text-dark"
+              style="margin-bottom: 12px; font-weight: 700; border-bottom: 2px solid rgba(168,90,54,0.2); padding-bottom: 6px;">
+              Next 12 Months</div>
+            <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 10px;">
+              <li class="body text-mid">• 500 events</li>
+              <li class="body text-mid">• ₹10L ARR</li>
+              <li class="body text-mid">• Sponsor marketplace</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">10 / 12</div>
+    </div>
+
+    <!-- SLIDE 13: MASCOT / BRAND -->
+    <div class="slide bg-warm" id="slide-10">
+      <div class="slide-inner col-2">
+        <div>
+          <div class="eyebrow">Brand Identity</div>
+          <div class="h2 text-dark" style="margin-bottom:2%;">Meet Coffee Cat<br><span class="text-brown">The Face of
+              SpotMe</span></div>
+          <div class="body text-mid" style="margin-bottom:3%;">A grumpy but loveable white cat who takes photography
+            seriously — so your event memories aren't left behind.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="card" style="padding:8px 12px;display:flex;align-items:center;gap:8px;"><span>📷</span><span
+                class="small text-dark">Photographer — captures every moment</span></div>
+            <div class="card" style="padding:8px 12px;display:flex;align-items:center;gap:8px;"><span>📱</span><span
+                class="small text-dark">Tech guide — navigates the app</span></div>
+            <div class="card" style="padding:8px 12px;display:flex;align-items:center;gap:8px;"><span>🖼️</span><span
+                class="small text-dark">Memory keeper — delivers your gallery</span></div>
+            <div class="card" style="padding:8px 12px;display:flex;align-items:center;gap:8px;"><span>🎪</span><span
+                class="small text-dark">Event host — present at every touchpoint</span></div>
+          </div>
+        </div>
+        <div
+          style="text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2%;">
+          <div
+            style="font-size:clamp(9px,1.2vw,14px);color:#A85A36;font-family:sans-serif;letter-spacing:0.1em;margin-bottom:8px;">
+            THE COFFEE CAT POSES</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;">
+            <div class="card" style="padding:8px;text-align:center;">
+              <div style="font-size:clamp(24px,5vw,64px);">📷😒</div>
+              <div class="small text-mid">Shooting</div>
+            </div>
+            <div class="card" style="padding:8px;text-align:center;">
+              <div style="font-size:clamp(24px,5vw,64px);">📱😑</div>
+              <div class="small text-mid">Browsing</div>
+            </div>
+            <div class="card" style="padding:8px;text-align:center;">
+              <div style="font-size:clamp(24px,5vw,64px);">🧠😏</div>
+              <div class="small text-mid">AI Expert</div>
+            </div>
+            <div class="card" style="padding:8px;text-align:center;">
+              <div style="font-size:clamp(24px,5vw,64px);">🎪😤</div>
+              <div class="small text-mid">Hosting</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-num">11 / 12</div>
+    </div>
+
+
+    <!-- SLIDE 15: CLOSING -->
+    <div class="slide bg-dark" id="slide-11">
+      <div class="deco-circle" style="width:60vw;height:60vw;right:-20vw;top:-20vw;background:rgba(168,90,54,0.08);">
+      </div>
+      <div class="deco-circle" style="width:40vw;height:40vw;left:-15vw;bottom:-15vw;background:rgba(217,124,83,0.06);">
+      </div>
+      <div class="slide-inner" style="text-align:center;">
+        <div style="font-size:clamp(22px,4vw,56px);font-weight:800;color:#FFFDFB;line-height:1.1;margin-bottom:1%;">
+          Every Event Creates Memories.
+        </div>
+        <div style="font-size:clamp(22px,4vw,56px);font-weight:800;color:#D97C53;line-height:1.1;margin-bottom:4%;">
+          SpotMe Makes Them Findable.
+        </div>
+        <div style="display:flex;justify-content:center;gap:2%;flex-wrap:wrap;margin-bottom:4%;">
+          <!-- Card 1: Book a Demo -->
+          <a href="https://stopme.in" target="_blank" class="card-dark"
+            style="text-align:center;min-width:clamp(80px,15vw,180px);color:inherit;text-decoration:none;transition:transform 0.2s;"
+            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div
+              style="font-size:clamp(10px,1.5vw,16px);color:#D97C53;font-family:sans-serif;font-weight:600;margin-bottom:4px;">
+              BOOK A DEMO</div>
+            <div class="small" style="color:#888;">stopme.in</div>
+          </a>
+
+          <!-- Card 2: Facebook -->
+          <a href="https://www.facebook.com/profile.php?id=61586563420704" target="_blank" class="card-dark"
+            style="text-align:center;min-width:clamp(80px,15vw,180px);color:inherit;text-decoration:none;transition:transform 0.2s;"
+            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div
+              style="font-size:clamp(10px,1.5vw,16px);color:#D97C53;font-family:sans-serif;font-weight:600;margin-bottom:4px;">
+              FACEBOOK</div>
+            <div class="small" style="color:#888;">stopme.in</div>
+          </a>
+
+          <!-- Card 3: LinkedIn -->
+          <a href="https://www.linkedin.com/company/spotmeus" target="_blank" class="card-dark"
+            style="text-align:center;min-width:clamp(80px,15vw,180px);color:inherit;text-decoration:none;transition:transform 0.2s;"
+            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div
+              style="font-size:clamp(10px,1.5vw,16px);color:#D97C53;font-family:sans-serif;font-weight:600;margin-bottom:4px;">
+              LINKEDIN</div>
+            <div class="small" style="color:#888;">spotmeus</div>
+          </a>
+
+          <!-- Card 4: Instagram -->
+          <a href="https://www.instagram.com/spotme__app/" target="_blank" class="card-dark"
+            style="text-align:center;min-width:clamp(80px,15vw,180px);color:inherit;text-decoration:none;transition:transform 0.2s;"
+            onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <div
+              style="font-size:clamp(10px,1.5vw,16px);color:#D97C53;font-family:sans-serif;font-weight:600;margin-bottom:4px;">
+              INSTAGRAM</div>
+            <div class="small" style="color:#888;">@spotme__app</div>
+          </a>
+        </div>
+        <div
+          style="font-style:italic;font-size:clamp(12px,1.8vw,22px);color:rgba(255,253,251,0.4);font-family:sans-serif;">
+          One Selfie. Every Memory.
+        </div>
+      </div>
+      <div class="slide-num">12 / 12</div>
+    </div>
+
+  </div>
+
+  <script>
+    let current = 0;
+    const total = 12;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.toggle('active', i === n);
+      });
+      document.querySelectorAll('.nav-btn').forEach((b, i) => {
+        if (i < total) b.classList.toggle('active', i === n);
+      });
+      current = n;
+    }
+
+    function nextSlide() {
+      showSlide((current + 1) % total);
+    }
+
+    function prevSlide() {
+      showSlide((current - 1 + total) % total);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+    });
+  </script>
+</body>
+
+</html>
